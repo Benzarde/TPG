@@ -1,3 +1,296 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ptGIGI</title>
+  <style>
+:root {
+  --bg: #0b0e14;
+  --panel: #121826;
+  --panel-2: #0f1523;
+  --text: #e6edf3;
+  --muted: #9aa7b2;
+  --brand: #8ab4f8;
+  --accent: #a78bfa;
+  --danger: #ef4444;
+  --success: #34d399;
+  --warning: #f59e0b;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; padding: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: radial-gradient(1200px 800px at 70% -20%, #1b2240 0%, var(--bg) 60%);
+  color: var(--text);
+}
+
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+
+.app-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px; background: linear-gradient(90deg, #0f172a, #111827);
+  position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #1f2937;
+}
+.brand { display: flex; gap: 12px; align-items: baseline; }
+.logo { font-weight: 800; letter-spacing: 0.5px; font-size: 20px; color: var(--brand); }
+.tag { color: var(--muted); font-size: 13px; }
+.top-actions { display: flex; gap: 8px; }
+
+.container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+
+.card {
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid #1f2937; border-radius: 14px; padding: 16px 16px 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.card h2, .card h3, .card h4 { margin: 8px 0 12px; }
+
+.link-btn, button {
+  background: #1f2937; border: 1px solid #334155; color: var(--text);
+  padding: 10px 14px; border-radius: 10px; cursor: pointer; transition: 0.15s ease;
+}
+.link-btn:hover, button:hover { transform: translateY(-1px); border-color: #475569; }
+.secondary { background: #0b1220; border-color: #273249; }
+.danger { background: #220f11; border-color: #3a0f12; color: #fca5a5; }
+
+label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+input, select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #273249; background: #0c1220; color: var(--text); }
+form { display: grid; gap: 10px; }
+
+.profiles-grid { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 16px; }
+.auth { background: rgba(255,255,255,0.02); padding: 12px; border-radius: 12px; border: 1px solid #1f2937; }
+.hint { font-size: 12px; color: var(--muted); }
+
+.player-select .player-actions { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.selected-players { display: flex; gap: 8px; flex-wrap: wrap; min-height: 36px; }
+.profiles-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.profile-card { background: #0e1423; border: 1px solid #273249; padding: 10px; border-radius: 10px; display: grid; gap: 6px; }
+.profile-card .title { font-size: 12px; color: var(--muted); }
+.profile-card .level { display: inline-flex; align-items: center; gap: 8px; }
+.level-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); display: inline-block; }
+
+.scoreboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.score-card { background: #0e1220; border: 1px solid #273249; border-radius: 12px; padding: 10px; display: grid; gap: 6px; }
+.score-top { display: flex; justify-content: space-between; align-items: center; }
+.score-points { font-weight: 700; color: #f8fafc; }
+.score-bust { color: #fda4af; font-weight: 600; }
+
+.game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.event-banner { padding: 10px; border-radius: 10px; border: 1px dashed #334155; }
+.dice-skin { font-size: 12px; color: var(--muted); }
+
+.turn-area { display: grid; grid-template-columns: 1fr 1.2fr; gap: 12px; align-items: start; }
+.dice-area { background: #0e1423; border: 1px solid #273249; border-radius: 12px; padding: 12px; }
+.dice-3d-group { min-height: 120px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.die {
+  width: 56px; height: 56px; border-radius: 14px;
+  background: linear-gradient(180deg, #0d1322, #0a0f1d);
+  border: 1px solid #263149; position: relative; box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 10px 30px rgba(0,0,0,0.35);
+}
+.die::after { content: ""; position: absolute; inset: 1px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.04); }
+.die .pips { position: absolute; inset: 0; display: grid; place-items: center; color: #94a3b8; font-weight: 700; }
+.die.super { outline: 2px solid var(--accent); }
+.die.mega { outline: 2px solid var(--brand); }
+
+.results { background: #0e1423; border: 1px solid #273249; border-radius: 12px; padding: 12px; }
+.pulls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.pull-card { background: #0b1120; border: 1px solid #23314d; border-radius: 12px; padding: 8px; text-align: center; position: relative; overflow: hidden; }
+.pull-card .name { font-size: 12px; color: var(--muted); }
+.pull-card img { width: 80px; height: 80px; image-rendering: pixelated; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.4)); }
+.pull-card .rarity { position: absolute; top: 6px; right: 6px; font-size: 11px; }
+.pull-card .legendary { color: #60a5fa; }
+.pull-card .gmax { color: #fbbf24; }
+.pull-card .shiny { color: #f472b6; }
+.pull-card .secret { color: #c084fc; }
+.pull-card .rainbow { color: #34d399; }
+
+.pulls-log { margin-top: 10px; max-height: 160px; overflow: auto; font-size: 12px; color: var(--muted); background: #0b1120; border: 1px solid #1b2741; padding: 8px; border-radius: 10px; }
+
+.status-bar { margin-top: 12px; font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; }
+
+/* Modals */
+.modal { border: 1px solid #334155; border-radius: 12px; padding: 0; width: min(900px, 92vw); background: linear-gradient(180deg, #0a0f1d, #0c1322); color: var(--text); }
+.modal form { padding: 16px; }
+.modal h3 { margin-top: 0; }
+.trophy-tabs { display: flex; gap: 6px; margin-bottom: 8px; }
+.tab { background: #0b1220; border: 1px solid #273249; padding: 6px 10px; border-radius: 8px; color: var(--text); cursor: pointer; }
+.tab.active { border-color: var(--brand); color: var(--brand); }
+.trophy-content { min-height: 260px; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+.dex-card { background: #0b1120; border: 1px solid #23314d; border-radius: 10px; padding: 8px; text-align: center; }
+
+.trade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.trade-list { min-height: 200px; border: 1px dashed #31405f; border-radius: 10px; padding: 8px; }
+.trade-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+
+.storage-dump { background: #0b1120; border: 1px solid #1b2741; padding: 10px; border-radius: 10px; max-height: 250px; overflow: auto; }
+
+@media (max-width: 900px) {
+  .profiles-grid { grid-template-columns: 1fr; }
+  .turn-area { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="logo">ptGIGI</span>
+      <span class="tag">Pokémon Dice — hit exactly 100</span>
+    </div>
+    <nav class="top-actions">
+      <button id="openTrophiesBtn" class="link-btn">Trophies</button>
+      <button id="openPokedexBtn" class="link-btn">Pokédex</button>
+      <button id="openTradeBtn" class="link-btn">Trade</button>
+      <button id="openDevBtn" class="link-btn">Dev</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Profile/Login Section -->
+    <section id="profileSection" class="card">
+      <h2>Profiles</h2>
+      <div class="profiles-grid">
+        <div class="auth">
+          <h3>Register</h3>
+          <form id="registerForm">
+            <label>Username<input id="regUsername" autocomplete="username" required /></label>
+            <label>Password<input id="regPassword" type="password" autocomplete="new-password" required /></label>
+            <button type="submit">Create Profile</button>
+          </form>
+          <div class="hint">Profiles persist locally. Log in with the same username to recover stats.</div>
+        </div>
+        <div class="auth">
+          <h3>Login</h3>
+          <form id="loginForm">
+            <label>Username<input id="loginUsername" autocomplete="username" required /></label>
+            <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required /></label>
+            <button type="submit">Login</button>
+          </form>
+        </div>
+        <div class="player-select">
+          <h3>Selected Players</h3>
+          <div id="selectedPlayers" class="selected-players"></div>
+          <div class="player-actions">
+            <button id="startGameBtn" disabled>Start Game</button>
+            <button id="clearSelectionBtn" class="secondary">Clear</button>
+          </div>
+          <h4>All Profiles</h4>
+          <div id="profilesList" class="profiles-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Game Section -->
+    <section id="gameSection" class="card hidden">
+      <div class="game-header">
+        <div class="event-banner hidden" id="eventBanner"></div>
+        <div class="dice-skin" id="diceSkinIndicator"></div>
+      </div>
+
+      <div id="scoreboard" class="scoreboard"></div>
+
+      <div class="turn-area">
+        <div class="dice-area">
+          <div id="dice3d" class="dice-3d-group"></div>
+          <div class="dice-controls">
+            <button id="rollBtn">Roll Dice</button>
+            <span id="turnInfo" class="muted"></span>
+          </div>
+        </div>
+        <div class="results">
+          <h3>Pulls</h3>
+          <div id="pullsGrid" class="pulls-grid"></div>
+          <div id="pullsLog" class="pulls-log"></div>
+        </div>
+      </div>
+
+      <div id="statusBar" class="status-bar"></div>
+    </section>
+  </main>
+
+  <!-- Modals -->
+  <dialog id="trophiesModal" class="modal">
+    <form method="dialog">
+      <h3>Trophy Case</h3>
+      <div class="trophy-tabs">
+        <button data-tab="rainbow" class="tab active">Rainbow</button>
+        <button data-tab="secret" class="tab">Secret</button>
+        <button data-tab="shiny" class="tab">Shiny</button>
+      </div>
+      <div id="trophiesContent" class="trophy-content"></div>
+      <menu>
+        <button value="cancel">Close</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="pokedexModal" class="modal">
+    <form method="dialog">
+      <h3>Pokédex</h3>
+      <div id="pokedexContent" class="dex-grid"></div>
+      <menu>
+        <button value="cancel">Close</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="tradeModal" class="modal">
+    <form method="dialog" id="tradeForm">
+      <h3>Trade Center</h3>
+      <div class="trade-grid">
+        <div class="trade-col">
+          <h4>Player A</h4>
+          <select id="tradePlayerA"></select>
+          <div id="tradeAList" class="trade-list"></div>
+        </div>
+        <div class="trade-col">
+          <h4>Player B</h4>
+          <select id="tradePlayerB"></select>
+          <div id="tradeBList" class="trade-list"></div>
+        </div>
+      </div>
+      <div class="trade-actions">
+        <button id="confirmTradeBtn" disabled>Confirm Trade</button>
+      </div>
+      <menu>
+        <button value="cancel">Close</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="devModal" class="modal">
+    <form method="dialog" id="devForm">
+      <h3>Dev Tools</h3>
+      <section class="dev-section">
+        <h4>Events</h4>
+        <div class="row" style="gap:8px; align-items:center;">
+          <select id="devEventSelect" style="flex:1;"></select>
+          <button id="devTriggerEventBtn" class="secondary">Trigger</button>
+          <button id="devClearEventBtn" class="secondary">Clear</button>
+        </div>
+      </section>
+      <section class="dev-section">
+        <h4>Data</h4>
+        <div class="row">
+          <button id="devResetGameBtn" class="danger">Reset Current Game</button>
+          <button id="devResetProfilesBtn" class="danger">Reset All Profiles</button>
+        </div>
+        <div class="row">
+          <button id="devDumpStorageBtn" class="secondary">View Storage</button>
+        </div>
+        <pre id="devStorageDump" class="storage-dump"></pre>
+      </section>
+      <menu>
+        <button value="cancel">Close</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <script>
 /* ptGIGI main app module */
 
 // ------------------------------
@@ -849,3 +1142,6 @@ function init() {
 }
 
 init();
+</script>
+</body>
+</html>
